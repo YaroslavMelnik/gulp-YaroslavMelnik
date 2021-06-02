@@ -1,4 +1,5 @@
 /node_modules/
+/gulp-YaroslavMelnik/
 /.git/
 /**/Thumbs.db
 /**/*.DS_Store
