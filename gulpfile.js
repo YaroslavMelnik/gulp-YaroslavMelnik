@@ -10,7 +10,8 @@ let path = {
 		js: project_folder + "/js/",
 		img: project_folder + "/img/",
 		favicons: project_folder + "/img/favicons/",
-		fonts: project_folder + "/fonts/"
+		fonts: project_folder + "/fonts/",
+		video: project_folder + "/video/"
 	},
 	src: {
 		html: [source_folder + "/*.html", "!" + source_folder + "/_*.html"],
@@ -21,7 +22,8 @@ let path = {
 		fontsOtf: source_folder + "/fonts/*.otf",
 		fonts: source_folder + "/fonts/*.ttf",
 		fontsWoff: source_folder + "/fonts/*.{woff,woff2}",
-		svg: source_folder + '/img/**/*.svg'
+		svg: source_folder + '/img/**/*.svg',
+		video: source_folder + '/video/**/*.*'
 	},
 	watch: {
 		html: source_folder + "/**/*.html",
@@ -32,7 +34,8 @@ let path = {
 		fontsOtf: source_folder + "/fonts/*.otf",
 		fonts: source_folder + "/fonts/*.ttf",
 		fontsWoff: source_folder + "/fonts/*.{woff,woff2}",
-		svg: source_folder + '/img/**/*.svg'
+		svg: source_folder + '/img/**/*.svg',
+		video: source_folder + '/video/**/*.*'
 	},
 	clean: "./" + project_folder + "/"
 }
@@ -217,6 +220,11 @@ function fonts(params) {
 		.pipe(dest(path.build.fonts))
 }
 
+function video(params) {
+	return src(path.src.video)
+		.pipe(dest(path.build.video))
+}
+
 
 
 function fontsWoff(params) {
@@ -296,6 +304,7 @@ function watchFiles() {
 	gulp.watch([path.watch.fontsWoff], fontsWoff);
 	gulp.watch([path.watch.svg], svgsprite);
 	gulp.watch([path.watch.favicons], Favicons);
+	gulp.watch([path.watch.video], video);
 }
 
 function clean() {
@@ -303,9 +312,10 @@ function clean() {
 }
 
 
-let build = gulp.series(clean, gulp.parallel(js, css, html, images, Favicons, otf2ttf, fonts, fontsWoff, svgsprite), fontsStyle);
+let build = gulp.series(clean, gulp.parallel(js, css, html, images, video, Favicons, otf2ttf, fonts, fontsWoff, svgsprite), fontsStyle);
 let watch = gulp.parallel(build, watchFiles, browserSync);
 
+exports.video = video;
 exports.Favicons = Favicons;
 exports.svgsprite = svgsprite;
 exports.fontsStyle = fontsStyle;

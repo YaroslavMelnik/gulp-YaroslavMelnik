@@ -3,7 +3,7 @@ window.jQuery = $
 window.$ = $
 
 // ! Import vendor jQuery plugin example (not module)
-// require('~/app/libs/mmenu/dist/mmenu.js')
+// require('~/#src/js/libs/mmenu/dist/mmenu.js')
 
 
 function testWebP(callback) {

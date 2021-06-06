@@ -1,14 +1,13 @@
-@mixin font($font_name, $file_name, $weight, $style) {
-	@font-face {
-		font-family: $font_name;
-		font-display: swap;
-		src: url("../fonts/#{$file_name}.woff") format("woff"), url("../fonts/#{$file_name}.woff2") format("woff2");
-		font-weight: #{$weight};
-		font-style: #{$style};
-	}
-}
 
+
+// ! Импорт миксинов
+@import "mixins";
+
+// ! подключение шрифтов
 @import "fonts";
+
+// ! Импорт иконочных шрифтов
+@import "icons";
 
 // ! Импорт библиотек
 // Bootstrap compatible gutter variable => $gutter
@@ -21,6 +20,52 @@ $gutter: $grid-gutter-width;
 // @import 'node_modules/bootstrap/scss/utilities/_sizing.scss'; // Optional Bootstrap Utilites
 
 @import "libs/**/*";
+
+// ! Переменные
+$minWidth: 320px;
+$maxWidth: 1400;
+$maxWidthContainer: 1170;
+$md1: $maxWidthContainer + 12;
+$md2: 991.98;
+$md3: 767.98;
+$md4: 479.98;
+
+// ! Общие параметры
+body {
+	color: #000;
+	font-size: 14px;
+	&._lock {
+		overflow: hidden;
+	}
+}
+
+// ! Оболочка
+.wrapper {
+	width: 100%;
+	min-height: 100%;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	&._loaded {
+
+	}
+}
+
+// ! Основная сетка
+.container {
+	max-width: $maxWidthContainer + px;
+	margin: 0 auto;
+	@media (max-width: $md1+px) {
+		max-width: 970px;
+	}
+	@media (max-width: $md2+px) {
+		max-width: 750px;
+	}
+	@media (max-width: $md3+px) {
+		max-width: none;
+		padding: 0 10px;
+	}
+}
 
 // ! Импорт блоков стилей
 @import "blocks/**/*";
