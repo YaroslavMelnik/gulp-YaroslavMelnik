@@ -20,6 +20,8 @@
 		"gulp-fonter": "^0.3.0",
 		"gulp-group-css-media-queries": "^1.2.2",
 		"gulp-imagemin": "^7.1.0",
+		"gulp-newer": "^1.4.0",
+		"gulp-plumber": "^1.2.1",
 		"gulp-real-favicon": "^0.3.2",
 		"gulp-rename": "^2.0.0",
 		"gulp-sass": "^4.1.0",
@@ -31,6 +33,7 @@
 		"gulp-webp-css": "^1.1.0",
 		"gulp-webp-html": "^1.0.2",
 		"gulp-webpcss": "^1.1.1",
+		"imagemin-webp": "^6.0.0",
 		"webp-converter": "^2.2.3"
 	},
 	"dependencies": {

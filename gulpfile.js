@@ -50,13 +50,16 @@ let { src, dest } = require('gulp'),
 	sassglob = require('gulp-sass-glob'),
 	autoprefixer = require('gulp-autoprefixer'),
 	group_media = require('gulp-group-css-media-queries'),
+	plumber = require("gulp-plumber"),
 	clean_css = require('gulp-clean-css'),
 	rename = require("gulp-rename"),
 	uglify = require('gulp-uglify-es').default,
 	imagemin = require('gulp-imagemin'),
-	webp = require('gulp-webp'),
+	webp = require('imagemin-webp'),
+	// webp = require('gulp-webp'),
 	webphtml = require('gulp-webp-html'),
 	webpcss = require("gulp-webpcss"),
+	newer = require('gulp-newer'),
 	svgSprite = require('gulp-svg-sprite'),
 	ttf2woff = require('gulp-ttf2woff'),
 	ttf2woff2 = require('gulp-ttf2woff2'),
@@ -77,6 +80,7 @@ function browserSync() {
 
 function html() {
 	return src(path.src.html)
+		.pipe(plumber())
 		.pipe(fileinclude())
 		.pipe(webphtml())
 		.pipe(dest(path.build.html))
@@ -85,6 +89,7 @@ function html() {
 
 function css() {
 	return src(path.src.css)
+		.pipe(plumber())
 		.pipe(sassglob())
 		.pipe(
 			scss({
@@ -100,7 +105,12 @@ function css() {
 				cascade: true
 			})
 		)
-		.pipe(webpcss())
+		.pipe(webpcss(
+			{
+				webpClass: "._webp",
+				noWebpClass: "._no-webp"
+			}
+		))
 		.pipe(dest(path.build.css))
 		.pipe(clean_css())
 		.pipe(
@@ -130,6 +140,7 @@ function css() {
 
 function js() {
 	return src(path.src.js)
+		.pipe(plumber())
 		.pipe(webpack({
 			mode: 'production',
 			performance: { hints: false },
@@ -156,31 +167,62 @@ function js() {
 
 function images() {
 	return src(path.src.img)
+		.pipe(newer(path.build.img))
 		.pipe(
-			webp({
-				quality: 70
+			imagemin([
+				webp({
+					quality: 75
+				})
+			])
+		)
+		.pipe(
+			rename({
+				extname: ".webp"
 			})
 		)
 		.pipe(dest(path.build.img))
 		.pipe(src(path.src.img))
+		.pipe(newer(path.build.img))
 		.pipe(
 			imagemin({
-				interlaced: true,
 				progressive: true,
-				optimizationLevel: 3,
-				svgoPlugins: [
-					{
-						removeViewBox: false
-					}
-				]
+				svgoPlugins: [{ removeViewBox: false }],
+				interlaced: true,
+				optimizationLevel: 3 // 0 to 7
 			})
 		)
 		.pipe(dest(path.build.img))
 		.pipe(browsersync.stream())
 }
 
+// function images() {
+// 	return src(path.src.img)
+// 		.pipe(
+// 			webp({
+// 				quality: 70
+// 			})
+// 		)
+// 		.pipe(dest(path.build.img))
+// 		.pipe(src(path.src.img))
+// 		.pipe(
+// 			imagemin({
+// 				interlaced: true,
+// 				progressive: true,
+// 				optimizationLevel: 3,
+// 				svgoPlugins: [
+// 					{
+// 						removeViewBox: false
+// 					}
+// 				]
+// 			})
+// 		)
+// 		.pipe(dest(path.build.img))
+// 		.pipe(browsersync.stream())
+// }
+
 function Favicons(params) {
 	return src(path.src.favicons)
+		.pipe(plumber())
 		.pipe(favicons({
 			icons: {
 				appleIcon: true,
@@ -205,6 +247,7 @@ function Favicons(params) {
 
 function otf2ttf(params) {
 	return src(path.src.fontsOtf)
+		.pipe(plumber())
 		.pipe(fonter({
 			formats: ['ttf']
 		}))
@@ -213,6 +256,7 @@ function otf2ttf(params) {
 
 function fonts(params) {
 	src(path.src.fonts)
+		.pipe(plumber())
 		.pipe(ttf2woff())
 		.pipe(dest(path.build.fonts))
 	return src(path.src.fonts)
@@ -222,6 +266,7 @@ function fonts(params) {
 
 function video(params) {
 	return src(path.src.video)
+		.pipe(plumber())
 		.pipe(dest(path.build.video))
 }
 
@@ -229,6 +274,7 @@ function video(params) {
 
 function fontsWoff(params) {
 	return src(path.src.fontsWoff)
+		.pipe(plumber())
 		.pipe(dest(path.build.fonts))
 }
 
@@ -271,8 +317,7 @@ function svgsprite() {
 		.pipe(browsersync.stream())
 }
 
-function fontsStyle(params) {
-
+function fontsStyle() {
 	let file_content = fs.readFileSync(source_folder + '/scss/fonts.scss');
 	if (file_content == '') {
 		fs.writeFile(source_folder + '/scss/fonts.scss', '', cb);
@@ -312,7 +357,7 @@ function clean() {
 }
 
 
-let build = gulp.series(clean, gulp.parallel(js, css, html, images, video, Favicons, otf2ttf, fonts, fontsWoff, svgsprite), fontsStyle);
+let build = gulp.series(clean, gulp.parallel(js, css, html, images, video, Favicons, otf2ttf, fonts, fontsWoff, svgsprite), gulp.parallel(fontsStyle));
 let watch = gulp.parallel(build, watchFiles, browserSync);
 
 exports.video = video;
